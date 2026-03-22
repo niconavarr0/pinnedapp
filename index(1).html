@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pinned — Plan it where you chat it</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:       #0C0C0A;
+  --surface:  #141412;
+  --border:   #242420;
+  --text:     #F0EFE8;
+  --muted:    #6B6B62;
+  --accent:   #F0EFE8;
+  --blue:     #3B82F6;
+  --gold:     #D4A853;
+  --serif:    'Instrument Serif', Georgia, serif;
+  --sans:     'DM Sans', sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ── Nav ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 48px;
+  background: rgba(12,12,10,0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo {
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--serif); font-size: 20px; color: var(--text);
+  text-decoration: none;
+}
+.nav-cta {
+  background: var(--text); color: var(--bg);
+  border: none; padding: 9px 20px; border-radius: 8px;
+  font-family: var(--sans); font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: opacity 0.15s;
+  text-decoration: none;
+}
+.nav-cta:hover { opacity: 0.85; }
+
+/* ── Hero ── */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center;
+  padding: 120px 24px 80px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-glow {
+  position: absolute;
+  width: 600px; height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(212,168,83,0.06) 0%, transparent 70%);
+  top: 50%; left: 50%; transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-size: 11px; font-weight: 500; letter-spacing: 0.8px;
+  text-transform: uppercase; color: var(--muted);
+  padding: 6px 14px; border-radius: 20px;
+  margin-bottom: 32px;
+  animation: fadeUp 0.6s ease both;
+}
+.hero-badge span { color: var(--gold); }
+
+.hero h1 {
+  font-family: var(--serif);
+  font-size: clamp(48px, 8vw, 96px);
+  font-weight: 400;
+  line-height: 1.0;
+  letter-spacing: -2px;
+  margin-bottom: 24px;
+  animation: fadeUp 0.6s 0.1s ease both;
+}
+.hero h1 em {
+  font-style: italic;
+  color: var(--gold);
+}
+
+.hero-sub {
+  font-size: clamp(15px, 2vw, 18px);
+  color: var(--muted);
+  max-width: 480px;
+  margin: 0 auto 48px;
+  line-height: 1.7;
+  animation: fadeUp 0.6s 0.2s ease both;
+}
+
+/* ── Waitlist form ── */
+.waitlist-form {
+  display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
+  max-width: 440px; width: 100%;
+  animation: fadeUp 0.6s 0.3s ease both;
+}
+.waitlist-input {
+  flex: 1; min-width: 220px;
+  padding: 13px 18px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-family: var(--sans); font-size: 14px; color: var(--text);
+  outline: none; transition: border-color 0.2s;
+}
+.waitlist-input::placeholder { color: var(--muted); }
+.waitlist-input:focus { border-color: var(--gold); }
+
+.waitlist-btn {
+  padding: 13px 24px;
+  background: var(--text); color: var(--bg);
+  border: none; border-radius: 10px;
+  font-family: var(--sans); font-size: 14px; font-weight: 500;
+  cursor: pointer; transition: opacity 0.15s; white-space: nowrap;
+}
+.waitlist-btn:hover { opacity: 0.88; }
+
+.waitlist-success {
+  display: none;
+  align-items: center; gap: 10px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 14px 20px;
+  font-size: 14px; color: var(--text);
+  animation: fadeUp 0.4s ease both;
+}
+.waitlist-success.show { display: flex; }
+.success-dot { width: 8px; height: 8px; border-radius: 50%; background: #4ADE80; flex-shrink: 0; }
+
+.hero-note {
+  margin-top: 16px;
+  font-size: 12px; color: var(--muted);
+  animation: fadeUp 0.6s 0.4s ease both;
+}
+
+/* ── Counter ── */
+.counter-row {
+  display: flex; gap: 40px; justify-content: center;
+  margin-top: 72px;
+  animation: fadeUp 0.6s 0.5s ease both;
+}
+.counter-item { text-align: center; }
+.counter-num {
+  font-family: var(--serif); font-size: 36px; font-weight: 400;
+  color: var(--text); line-height: 1;
+  display: block; margin-bottom: 4px;
+}
+.counter-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* ── Chat preview ── */
+.preview-section {
+  padding: 80px 24px;
+  max-width: 900px; margin: 0 auto;
+  text-align: center;
+}
+.section-label {
+  font-size: 11px; font-weight: 500; color: var(--gold);
+  text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 16px;
+}
+.section-title {
+  font-family: var(--serif); font-size: clamp(32px, 5vw, 52px);
+  font-weight: 400; line-height: 1.1; margin-bottom: 16px; letter-spacing: -1px;
+}
+.section-sub { font-size: 16px; color: var(--muted); max-width: 400px; margin: 0 auto 56px; }
+
+/* Chat mockup */
+.chat-mockup {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  overflow: hidden;
+  max-width: 380px; margin: 0 auto;
+  box-shadow: 0 40px 80px rgba(0,0,0,0.4);
+}
+.chat-topbar {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 12px;
+}
+.chat-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: linear-gradient(135deg, #D4A853, #B8852A);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 500; color: #0C0C0A;
+}
+.chat-name { font-size: 14px; font-weight: 500; }
+.chat-status { font-size: 11px; color: var(--muted); }
+.online-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #4ADE80; margin-right: 4px; }
+
+.chat-messages { padding: 20px 16px; display: flex; flex-direction: column; gap: 10px; }
+
+.msg { display: flex; flex-direction: column; }
+.msg.them { align-items: flex-start; }
+.msg.me   { align-items: flex-end; }
+
+.bubble {
+  padding: 10px 14px; border-radius: 16px;
+  font-size: 13px; line-height: 1.5; max-width: 80%;
+}
+.them .bubble { background: #1E1E1C; color: var(--text); border-bottom-left-radius: 4px; }
+.me .bubble   { background: var(--text); color: var(--bg); border-bottom-right-radius: 4px; }
+.msg-time { font-size: 10px; color: var(--muted); margin-top: 3px; padding: 0 4px; }
+
+.pin-widget {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 14px; border-bottom-left-radius: 4px;
+  overflow: hidden; max-width: 92%; margin-top: 2px;
+}
+.pin-widget-header {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 12px;
+  background: #1A1A18;
+  border-bottom: 1px solid var(--border);
+}
+.pin-widget-title { font-size: 12px; font-weight: 500; color: var(--text); }
+.pin-sdk-badge {
+  margin-left: auto; background: rgba(212,168,83,0.15);
+  color: var(--gold); font-size: 9px; font-weight: 500;
+  padding: 2px 7px; border-radius: 8px; letter-spacing: 0.5px;
+}
+.pin-confirmed {
+  padding: 12px;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.pin-confirmed-row {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px; color: #4ADE80;
+}
+.pin-date-box {
+  background: #1A1A18; border-radius: 8px;
+  padding: 8px 10px; font-size: 11px; color: var(--text); line-height: 1.6;
+}
+
+/* ── How it works ── */
+.how-section {
+  padding: 80px 24px;
+  max-width: 900px; margin: 0 auto;
+}
+.steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; margin-top: 48px; }
+@media (max-width: 640px) { .steps { grid-template-columns: 1fr; } }
+
+.step {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 32px 28px;
+}
+.step:first-child { border-radius: 16px 0 0 16px; }
+.step:last-child  { border-radius: 0 16px 16px 0; }
+@media (max-width: 640px) {
+  .step:first-child { border-radius: 16px 16px 0 0; }
+  .step:last-child  { border-radius: 0 0 16px 16px; }
+}
+.step-num {
+  font-family: var(--serif); font-size: 48px; font-weight: 400;
+  color: var(--border); line-height: 1; margin-bottom: 20px;
+}
+.step-title { font-size: 15px; font-weight: 500; margin-bottom: 8px; }
+.step-body  { font-size: 13px; color: var(--muted); line-height: 1.7; }
+
+/* ── For platforms ── */
+.platform-section {
+  padding: 80px 24px;
+  max-width: 900px; margin: 0 auto;
+}
+.code-block {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px; overflow: hidden;
+  margin-top: 40px; text-align: left;
+}
+.code-topbar {
+  display: flex; align-items: center; gap: 6px;
+  padding: 14px 20px; border-bottom: 1px solid var(--border);
+}
+.dot { width: 10px; height: 10px; border-radius: 50%; }
+.code-filename { margin-left: 8px; font-size: 12px; color: var(--muted); font-family: 'DM Mono', monospace; }
+pre {
+  padding: 24px; font-family: 'DM Mono', monospace;
+  font-size: 13px; line-height: 1.8; overflow-x: auto;
+  color: #A8A89E;
+}
+.kw  { color: #C084FC; }
+.fn  { color: #60A5FA; }
+.str { color: #86EFAC; }
+.cm  { color: #4B5563; font-style: italic; }
+.gold { color: var(--gold); }
+
+/* ── Footer / CTA ── */
+.footer-cta {
+  padding: 100px 24px;
+  text-align: center;
+  border-top: 1px solid var(--border);
+}
+.footer-cta h2 {
+  font-family: var(--serif); font-size: clamp(32px, 5vw, 56px);
+  font-weight: 400; line-height: 1.1; letter-spacing: -1.5px;
+  margin-bottom: 16px;
+}
+.footer-cta h2 em { font-style: italic; color: var(--gold); }
+.footer-cta p { font-size: 16px; color: var(--muted); margin-bottom: 40px; }
+
+footer {
+  padding: 24px 48px;
+  border-top: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 12px;
+}
+.footer-logo { font-family: var(--serif); font-size: 16px; color: var(--muted); }
+.footer-links { display: flex; gap: 24px; }
+.footer-links a { font-size: 12px; color: var(--muted); text-decoration: none; }
+.footer-links a:hover { color: var(--text); }
+
+/* ── Animations ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+  opacity: 0; transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.fade-in.visible { opacity: 1; transform: translateY(0); }
+
+/* ── Divider ── */
+.section-divider {
+  width: 40px; height: 1px; background: var(--border);
+  margin: 0 auto 32px;
+}
+
+/* ── Roadmap ── */
+.roadmap-section {
+  padding: 80px 24px;
+  max-width: 700px; margin: 0 auto;
+}
+.roadmap-track {
+  display: flex; flex-direction: column; gap: 0;
+  margin-top: 48px; position: relative;
+}
+.roadmap-track::before {
+  content: ''; position: absolute;
+  left: 11px; top: 12px; bottom: 12px;
+  width: 1px; background: var(--border);
+}
+.roadmap-item {
+  display: flex; gap: 20px; padding-bottom: 36px; position: relative;
+}
+.roadmap-item:last-child { padding-bottom: 0; }
+.roadmap-dot {
+  width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0;
+  background: var(--surface); border: 1px solid var(--border);
+  margin-top: 2px; position: relative; z-index: 1;
+}
+.active-dot {
+  background: var(--gold); border-color: var(--gold);
+  box-shadow: 0 0 0 4px rgba(212,168,83,0.15);
+}
+.roadmap-content { flex: 1; }
+.roadmap-version {
+  font-size: 11px; font-weight: 500; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px;
+}
+.roadmap-title {
+  font-size: 17px; font-weight: 500; margin-bottom: 8px; color: var(--text);
+}
+.roadmap-body {
+  font-size: 13px; color: var(--muted); line-height: 1.7; margin-bottom: 10px;
+}
+.roadmap-status {
+  display: inline-block; font-size: 10px; font-weight: 500;
+  letter-spacing: 0.5px; text-transform: uppercase;
+  padding: 3px 10px; border-radius: 10px;
+}
+.roadmap-status.live     { background: rgba(74,222,128,0.1); color: #4ADE80; }
+.roadmap-status.upcoming { background: rgba(212,168,83,0.1); color: var(--gold); }
+.roadmap-status.future   { background: var(--surface); color: var(--muted); border: 1px solid var(--border); }
+
+</style>
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-WK6YJ5DFHT"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-WK6YJ5DFHT');
+</script>
+</head>
+<body>
+
+<!-- Nav -->
+<nav>
+  <a href="#" class="nav-logo">📌 Pinned</a>
+  <a href="#waitlist-bottom" class="nav-cta">Join waitlist</a>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-glow"></div>
+
+  <div class="hero-badge">📌 <span>SDK for chat platforms</span> · Coming 2026</div>
+
+  <h1>Plan it where<br>you <em>chat</em> it.</h1>
+
+  <p class="hero-sub">
+    Pinned is a lightweight SDK that adds calendar scheduling to any chat app — no new app, no friction, no switching.
+  </p>
+
+  <div class="waitlist-form" id="heroForm">
+    <input type="email" class="waitlist-input" id="heroEmail" placeholder="your@email.com">
+    <button class="waitlist-btn" onclick="joinWaitlist('hero')">Join waitlist →</button>
+  </div>
+  <div class="waitlist-success" id="heroSuccess">
+    <div class="success-dot"></div>
+    You're on the list — we'll be in touch!
+  </div>
+
+
+</section>
+
+<!-- Chat preview -->
+<section class="preview-section fade-in">
+  <p class="section-label">See it in action</p>
+  <h2 class="section-title">A calendar that lives<br><em>inside</em> your chat.</h2>
+  <p class="section-sub">No app switching. No copy-pasting dates. Just tap 📌 and you're done.</p>
+  <div class="section-divider"></div>
+
+  <div class="chat-mockup">
+    <div class="chat-topbar">
+      <div class="chat-avatar">S</div>
+      <div>
+        <div class="chat-name">Sara</div>
+        <div class="chat-status"><span class="online-dot"></span>Online</div>
+      </div>
+    </div>
+    <div class="chat-messages">
+      <div class="msg them">
+        <div class="bubble">Hey! Coffee this week? ☕</div>
+        <span class="msg-time">14:22</span>
+      </div>
+      <div class="msg me">
+        <div class="bubble">Yes! Let me check…</div>
+        <span class="msg-time">14:23</span>
+      </div>
+      <div class="msg them">
+        <div class="bubble">Just pin a time 👇</div>
+        <span class="msg-time">14:23</span>
+        <div class="pin-widget">
+          <div class="pin-widget-header">
+            <span>📌</span>
+            <span class="pin-widget-title">Pinned — pick a date</span>
+            <span class="pin-sdk-badge">SDK</span>
+          </div>
+          <div class="pin-confirmed">
+            <div class="pin-confirmed-row">✓ Date confirmed by both</div>
+            <div class="pin-date-box">
+              <strong>Friday, June 20 · 10:00 AM</strong><br>
+              <span style="color:#6B6B62;font-size:10px;">Added to both calendars · .ics sent</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="msg me">
+        <div class="bubble">📌 Friday at 10 — done! See you there ✌️</div>
+        <span class="msg-time">14:24</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Live demo embedded -->
+<section class="preview-section fade-in" style="padding-top:0;">
+  <p class="section-label" style="text-align:center;">Prøv det selv</p>
+  <h2 class="section-title" style="text-align:center;">Fungerende<br><em>demo.</em></h2>
+  <p class="section-sub" style="text-align:center;margin-bottom:32px;">Trykk på 📌 og velg en dato — akkurat slik det vil fungere i din chat-app.</p>
+  <div style="background:#F7F7F5;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);max-width:900px;margin:0 auto;">
+    <iframe src="pinned-sdk-demo.html" style="width:100%;height:700px;border:none;border-radius:16px;" title="Pinned SDK Demo"></iframe>
+  </div>
+</section>
+
+<!-- How it works -->
+<section class="how-section fade-in">
+  <div style="text-align:center;">
+    <p class="section-label">How it works</p>
+    <h2 class="section-title">Three steps.<br><em>Zero friction.</em></h2>
+    <p class="section-sub">For users, it just works. For platforms, it's two lines of code.</p>
+    <div class="section-divider"></div>
+  </div>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">01</div>
+      <div class="step-title">Tap 📌 in the chat</div>
+      <div class="step-body">A Pinned widget appears inline inside the chat bubble. No app switch. No new screen.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <div class="step-title">Pick a date together</div>
+      <div class="step-body">Both participants see the calendar. Select a date and time, tap confirm — both get notified instantly.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <div class="step-title">Calendars updated</div>
+      <div class="step-body">A .ics file is generated for Apple Calendar, Google Calendar, and Outlook. Zero manual entry.</div>
+    </div>
+  </div>
+</section>
+
+<!-- For platforms -->
+<section class="platform-section fade-in">
+  <div style="text-align:center;">
+    <p class="section-label">For platforms</p>
+    <h2 class="section-title">Integrate in<br><em>one sprint.</em></h2>
+    <p class="section-sub">Pure JavaScript. No backend. No dependencies. Works in any chat architecture.</p>
+    <div class="section-divider"></div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-topbar">
+      <div class="dot" style="background:#FF5F57;"></div>
+      <div class="dot" style="background:#FEBC2E;"></div>
+      <div class="dot" style="background:#28C840;"></div>
+      <span class="code-filename">integration.js</span>
+    </div>
+    <pre><span class="cm">// Step 1 — Load Pinned SDK (one script tag)</span>
+<span class="kw">&lt;script</span> <span class="fn">src</span>=<span class="str">"https://cdn.pinnedapp.io/sdk/v1.js"</span><span class="kw">&gt;&lt;/script&gt;</span>
+
+<span class="cm">// Step 2 — Attach to any chat message</span>
+<span class="gold">Pinned</span>.<span class="fn">attach</span>({
+  <span class="fn">container</span>: <span class="str">"#message-456"</span>,
+  <span class="fn">participants</span>: [<span class="str">"alice"</span>, <span class="str">"bob"</span>],
+  <span class="fn">onConfirm</span>: (event) <span class="kw">=&gt;</span> {
+    <span class="cm">// fires when both users confirm a date</span>
+    <span class="fn">saveToCalendar</span>(event.date, event.time);
+  }
+});</pre>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:12px;">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;">
+      <div style="font-size:20px;margin-bottom:8px;">⚡</div>
+      <div style="font-size:13px;font-weight:500;margin-bottom:4px;">Zero dependencies</div>
+      <div style="font-size:12px;color:var(--muted);">No npm packages, no build step. Drop in a script tag and go.</div>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;">
+      <div style="font-size:20px;margin-bottom:8px;">🎨</div>
+      <div style="font-size:13px;font-weight:500;margin-bottom:4px;">Fully customisable</div>
+      <div style="font-size:12px;color:var(--muted);">Override any style. Pinned adapts to your design system.</div>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;">
+      <div style="font-size:20px;margin-bottom:8px;">📅</div>
+      <div style="font-size:13px;font-weight:500;margin-bottom:4px;">Universal .ics export</div>
+      <div style="font-size:12px;color:var(--muted);">Apple Calendar, Google Calendar, Outlook — all supported.</div>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;">
+      <div style="font-size:20px;margin-bottom:8px;">🔒</div>
+      <div style="font-size:13px;font-weight:500;margin-bottom:4px;">Privacy-first</div>
+      <div style="font-size:12px;color:var(--muted);">No data stored by Pinned. Everything stays on the platform.</div>
+    </div>
+  </div>
+</section>
+
+
+<!-- Roadmap -->
+<section class="roadmap-section fade-in">
+  <div style="text-align:center;">
+    <p class="section-label">What's coming</p>
+    <h2 class="section-title">Built to grow<br><em>with platforms.</em></h2>
+    <p class="section-sub">V1 is just the beginning. Here's where Pinned is headed.</p>
+    <div class="section-divider"></div>
+  </div>
+
+  <div class="roadmap-track">
+    <div class="roadmap-item">
+      <div class="roadmap-dot active-dot"></div>
+      <div class="roadmap-content">
+        <div class="roadmap-version">V1 · Now</div>
+        <div class="roadmap-title">Calendar SDK</div>
+        <div class="roadmap-body">Calendar widget in chat bubbles, date + time picker, .ics export to Apple Calendar, Google Calendar and Outlook. Zero dependencies.</div>
+        <div class="roadmap-status live">Live in demo</div>
+      </div>
+    </div>
+    <div class="roadmap-item">
+      <div class="roadmap-dot"></div>
+      <div class="roadmap-content">
+        <div class="roadmap-version">V2 · Q3 2026</div>
+        <div class="roadmap-title">Social memory layer</div>
+        <div class="roadmap-body">After an event, both participants can upload photos directly tied to that date and conversation. Details available under NDA.</div>
+        <div class="roadmap-status upcoming">Upcoming</div>
+      </div>
+    </div>
+    <div class="roadmap-item">
+      <div class="roadmap-dot"></div>
+      <div class="roadmap-content">
+        <div class="roadmap-version">V3 · Q4 2026</div>
+        <div class="roadmap-title">Anniversary intelligence</div>
+        <div class="roadmap-body">Automatic resurfacing of memories on anniversaries. Turns every confirmed event into a long-term engagement touchpoint for platforms. Details under NDA.</div>
+        <div class="roadmap-status upcoming">Upcoming</div>
+      </div>
+    </div>
+    <div class="roadmap-item">
+      <div class="roadmap-dot"></div>
+      <div class="roadmap-content">
+        <div class="roadmap-version">V4 · 2027</div>
+        <div class="roadmap-title">Cross-platform sync</div>
+        <div class="roadmap-body">One Pinned event synced across WhatsApp, Messenger, iMessage — regardless of where the conversation started. The full vision.</div>
+        <div class="roadmap-status future">Roadmap</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:center;margin-top:48px;">
+    <p style="font-size:13px;color:var(--muted);">Interested in V2 or V3 details? <a href="mailto:nicolasnavarro1703@gmail.com" style="color:var(--gold);text-decoration:none;">Get in touch →</a></p>
+  </div>
+</section>
+
+<!-- Bottom CTA -->
+<section class="footer-cta fade-in" id="waitlist-bottom">
+  <h2>Ready to bring<br><em>Pinned</em> to your platform?</h2>
+  <p>Join the waitlist and be first to access the SDK when we launch.</p>
+
+  <div class="waitlist-form" id="bottomForm" style="margin:0 auto;">
+    <input type="email" class="waitlist-input" id="bottomEmail" placeholder="your@email.com">
+    <button class="waitlist-btn" onclick="joinWaitlist('bottom')">Get early access →</button>
+  </div>
+  <div class="waitlist-success" id="bottomSuccess" style="max-width:380px;margin:0 auto;">
+    <div class="success-dot"></div>
+    You're on the list — we'll be in touch!
+  </div>
+  <p style="font-size:12px;color:var(--muted);margin-top:16px;">For partnership enquiries: <a href="mailto:nicolasnavarro1703@gmail.com" style="color:var(--gold);text-decoration:none;">nicolasnavarro1703@gmail.com</a></p>
+</section>
+
+<!-- Footer -->
+<footer>
+  <span class="footer-logo">📌 Pinned</span>
+  <div class="footer-links">
+    <a href="#">SDK Docs</a>
+    <a href="#">Privacy</a>
+    <a href="mailto:nicolasnavarro1703@gmail.com">Contact</a>
+  </div>
+  <span style="font-size:12px;color:var(--muted);">© 2026 Pinned</span>
+</footer>
+
+<script>
+// ── Waitlist counter (localStorage so it persists) ────────────────────────
+let count = parseInt(localStorage.getItem('pinnedWaitlist') || '0');
+if (count === 0) { count = 47; localStorage.setItem('pinnedWaitlist', count); }
+// waitlist count removed
+
+function joinWaitlist(source) {
+  const emailId = source === 'hero' ? 'heroEmail' : 'bottomEmail';
+  const formId  = source === 'hero' ? 'heroForm'  : 'bottomForm';
+  const succId  = source === 'hero' ? 'heroSuccess': 'bottomSuccess';
+  const email   = document.getElementById(emailId).value.trim();
+
+  if (!email || !email.includes('@')) {
+    document.getElementById(emailId).focus();
+    document.getElementById(emailId).style.borderColor = '#EF4444';
+    setTimeout(() => document.getElementById(emailId).style.borderColor = '', 1500);
+    return;
+  }
+
+  // Increment counter
+  count++;
+  localStorage.setItem('pinnedWaitlist', count);
+  // waitlist count removed
+
+  // Show success
+  document.getElementById(formId).style.display = 'none';
+  document.getElementById(succId).classList.add('show');
+}
+
+// ── Scroll animations ─────────────────────
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
